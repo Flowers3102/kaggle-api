@@ -1,0 +1,18 @@
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+
+train = pd.read_csv("/kaggle/input/titanic/train.csv")
+test = pd.read_csv("/kaggle/input/titanic/test.csv")
+
+
+data = pd.concat([train, test], ignore_index=True)
+data['Title'] = data.Name.str.extract(' ([A-Za-z]+)\.', expand=False)
+
+
+model = RandomForestClassifier(n_estimators=100)
+model.fit(train[['Pclass', 'Sex', 'Age']], train['Survived'])
+
+
+predictions = model.predict(test[['Pclass', 'Sex', 'Age']])
+submission = pd.DataFrame({'PassengerId': test.PassengerId, 'Survived': predictions})
+submission.to_csv('submission.csv', index=False)
